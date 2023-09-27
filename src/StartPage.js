@@ -1,40 +1,83 @@
 import styles from './StartPage.module.css';
+import {Form, Alert, Button} from 'react-bootstrap';
 import {useState} from "react";
+import axios from "axios";
 
 const StartPage = () => {
     const [phone, setPhone] = useState('')
     const [code, setCode] = useState('')
+    const [showMessage, setShowMessage] = useState(false)
+    const [message, setMessage] = useState("")
+    const [alertType, setAlertType] = useState("danger")
 
-    function handleValidation() {
+    const handleValidation = async () => {
+        await axios.post("http://localhost:8080/api/v1/access-code/validate", {
+            "access_code": code,
+            "phone_num": phone
+        })
+            .then(res => {
+                setShowMessage(true)
+                if (res.data.success) {
+                    setMessage("Your phone number is successfully validated!")
+                    setAlertType("success")
+                    localStorage.setItem("phoneNumber", phone);
+                } else {
+                    setMessage("The code you entered does not match. Please try again.")
+                    setAlertType("danger")
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                setMessage("The code you entered does not match. Please try again.")
+                setAlertType("danger")
+            });
+    }
 
+    const handleSubmit = async () => {
+        await axios.post("http://localhost:8080/api/v1/access-code/create", {
+            phone_num: phone
+        })
+            .then(() => {
+                setShowMessage(true)
+                setMessage("We have sent you an access code via SMS.")
+                setAlertType("success")
+            })
+            .catch(error => {
+                console.error(error);
+                setMessage("There was an error. Please try again.")
+                setAlertType("danger")
+            });
     }
 
     return (
         <div className={styles.main}>
-            <header className={styles.header}>
+            <header className="mb-4">
                 <h1>Welcome to Skipli Project</h1>
             </header>
 
-            <form className={styles.form}>
-                <div>
-                    <label className={styles.label}>
-                        Phone Number: <input type="tel" name="phone" placeholder="Enter phone number..." value={phone}
-                                             onChange={e => setPhone(e.target.value)}
-                                             pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" />
-                    </label>
-                    <button className={styles.btn}>Submit</button>
-                </div>
-                <br/>
+            <Alert variant={alertType} hidden={!showMessage}>
+                {message}
+            </Alert>
 
-                <div>
-                    <label className={styles.label}>
-                        Access code: <input name="code" placeholder="Enter access code" value={code}
-                                            onChange={e => setCode(e.target.value)}
-                                            pattern="[0-9]{6}" />
-                    </label>
-                    <button className={styles.btn} onClick={handleValidation}>Validate</button>
-                </div>
-            </form>
+            <Form className="d-flex flex-column justify-content-start">
+                <Form.Group className="mb-4">
+                    <Form.Label>Phone Number: </Form.Label>
+                    <div className="d-flex">
+                        <Form.Control className="me-3" type="tel" placeholder="E.g: +61123456789"
+                                      pattern="/+[0-9]{11}" value={phone} onChange={e => setPhone(e.target.value)}/>
+                        <Button className="w-50" variant="primary" onClick={handleSubmit}>Get code</Button>
+                    </div>
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                    <Form.Label>Access Code: </Form.Label>
+                    <div className="d-flex">
+                    <Form.Control className="me-3" type="text" placeholder="E.g: 123456"
+                                  pattern="[0-9]{6}" value={code} onChange={e => setCode(e.target.value)} />
+                    <Button className="w-50" variant="primary" onClick={handleValidation}>Validate</Button>
+                    </div>
+                </Form.Group>
+            </Form>
         </div>
     );
 }
