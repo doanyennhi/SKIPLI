@@ -1,17 +1,27 @@
-
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import StartPage from "./StartPage";
-import Dashboard from "./Dashboard";
+import DashboardPage from "./DashboardPage";
+import Accounts from "./Accounts";
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <StartPage />,
+    },
+    {
+        path: "/dashboard",
+        element: <DashboardPage />,
+    },
+    {
+        path: "/dashboard/accounts",
+        element: <Accounts />
+    }
+]);
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route exact path="/" element={<StartPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-        </Router>
+        <RouterProvider router={router} />
     )
 }
 

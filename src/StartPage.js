@@ -1,7 +1,7 @@
-import styles from './StartPage.module.css';
 import {Form, Alert, Button} from 'react-bootstrap';
 import {useState} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 const StartPage = () => {
     const [phone, setPhone] = useState('')
@@ -50,7 +50,7 @@ const StartPage = () => {
     }
 
     return (
-        <div className={styles.main}>
+        <div className="vh-100 vw-100 d-flex flex-column align-items-center justify-content-center">
             <header className="mb-4">
                 <h1>Welcome to Skipli Project</h1>
             </header>
@@ -59,13 +59,13 @@ const StartPage = () => {
                 {message}
             </Alert>
 
-            <Form className="d-flex flex-column justify-content-start">
+            <Form className="mb-4 d-flex flex-column justify-content-start">
                 <Form.Group className="mb-4">
                     <Form.Label>Phone Number: </Form.Label>
                     <div className="d-flex">
                         <Form.Control className="me-3" type="tel" placeholder="E.g: +61123456789"
                                       pattern="/+[0-9]{11}" value={phone} onChange={e => setPhone(e.target.value)}/>
-                        <Button className="w-50" variant="primary" onClick={handleSubmit}>Get code</Button>
+                        <Button className="w-50" variant="outline-danger" onClick={handleSubmit}>Get code</Button>
                     </div>
                 </Form.Group>
 
@@ -74,10 +74,13 @@ const StartPage = () => {
                     <div className="d-flex">
                     <Form.Control className="me-3" type="text" placeholder="E.g: 123456"
                                   pattern="[0-9]{6}" value={code} onChange={e => setCode(e.target.value)} />
-                    <Button className="w-50" variant="primary" onClick={handleValidation}>Validate</Button>
+                    <Button className="w-50" variant="outline-danger" onClick={handleValidation}>Validate</Button>
                     </div>
                 </Form.Group>
             </Form>
+
+            <Link to="/dashboard"><Button variant="danger">Go to Dashboard</Button></Link>
+
         </div>
     );
 }
